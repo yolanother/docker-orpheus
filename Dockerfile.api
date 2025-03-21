@@ -6,16 +6,35 @@ RUN apt update && \
     
 RUN pip3 install --upgrade --no-cache-dir torch==2.5.1 torchvision==0.20.1+cu121 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
 
-# Install dependencies for API
-RUN pip install fastapi uvicorn pydub soundfile transformers
+RUN pip install huggingface_hub
 
-# Clone Spark-TTS repository
-RUN git clone https://github.com/canopyai/Orpheus-TTS /Orpheus-TTS
+# Copy API files and download script
+COPY api /Orpheus-TTS
+
+# Set up Hugging Face credentials
+ARG HUGGINGFACE_TOKEN
+ENV HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
+
+# Make the download script executable
+RUN chmod +x /Orpheus-TTS/download_models.sh
+
+# Download models using the script
+# This is in a separate layer to optimize caching
+RUN /Orpheus-TTS/download_models.sh
+
+# Install dependencies for API
+RUN pip install fastapi uvicorn pydub soundfile transformers 
+
+# Clone Orpheus-TTS repository to a temporary location
+RUN git clone https://github.com/canopyai/Orpheus-TTS /tmp/Orpheus-TTS
+
+# Copy necessary files from the cloned repository
+RUN cp -r /tmp/Orpheus-TTS/* /Orpheus-TTS/ && \
+    rm -rf /tmp/Orpheus-TTS
+
 WORKDIR /Orpheus-TTS
 RUN pip install orpheus-speech
-
-# Copy API files
-COPY api /api
+RUN pip install vllm==0.7.3
 
 # Make port available
 EXPOSE 7324
@@ -27,4 +46,4 @@ ENV PYTHONPATH=/Orpheus-TTS:/
 RUN mkdir -p /data/generated_audio /data/samples
 
 # Run the API server
-CMD ["sh", "-c", "cd /api && python -u api.py"]
+CMD ["sh", "-c", "python -u api.py"]

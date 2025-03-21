@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
     container_name: orpheus_tts_gradio
     runtime: nvidia
     network_mode: "host"
@@ -15,6 +17,7 @@ services:
       - NVIDIA_VISIBLE_DEVICES=0
       - GRADIO_SHARE=False
       - PORT=7325
+      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
     restart: always
     volumes:
       - D:/dockerdata/orpheus-tts:/data:rw
@@ -23,6 +26,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.api
+      args:
+        - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
     container_name: orpheus_tts_api
     runtime: nvidia
     network_mode: "host"
@@ -30,6 +35,7 @@ services:
     tty: true
     environment:
       - NVIDIA_VISIBLE_DEVICES=0
+      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
     restart: always
     volumes:
       - D:/dockerdata/orpheus-tts:/data:rw
