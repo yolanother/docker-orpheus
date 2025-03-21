@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  orpheus_tts_gradio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: orpheus_tts_gradio
+    runtime: nvidia
+    network_mode: "host"
+    stdin_open: true
+    tty: true
+    command: ["python3", "webui.py", "--server_port", "7325"]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0
+      - GRADIO_SHARE=False
+      - PORT=7325
+    restart: always
+    volumes:
+      - D:/dockerdata/orpheus-tts:/data:rw
+
+  orpheus_tts_api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: orpheus_tts_api
+    runtime: nvidia
+    network_mode: "host"
+    stdin_open: true
+    tty: true
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0
+    restart: always
+    volumes:
+      - D:/dockerdata/orpheus-tts:/data:rw
