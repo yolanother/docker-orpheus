@@ -35,6 +35,11 @@ def load_model(model_id: str, model_path: str = None):
             logger.info(f"Loading pretrained model from: {model_name}")
             models[model_id] = OrpheusModel(model_name=model_name)
             return True
+        elif model_id == "de-pretrained":
+            model_name = model_path if model_path else "/Orpheus-TTS/models/canopylabs/3b-de-pretrain-research_release"
+            logger.info(f"Loading de-pretrained research model from: {model_name}")
+            models[model_id] = OrpheusModel(model_name=model_name)
+            return True
         else:
             logger.error(f"Unknown model ID: {model_id}")
             return False
@@ -49,6 +54,7 @@ async def startup_event():
     logger.info("Loading models...")
     load_model("finetune-prod")
     load_model("pretrained")
+    load_model("de-pretrained")
     logger.info(f"Loaded {len(models)} models")
 
 def create_wav_header(sample_rate=24000, bits_per_sample=16, channels=1):
@@ -116,7 +122,7 @@ def generate_audio_stream(prompt: str, voice: str = "tara", model: str = "finetu
 async def tts(
     prompt: str = Query(..., description="Text to convert to speech"),
     voice: str = Query("tara", description="Voice to use for speech synthesis"),
-    model: str = Query("finetune-prod", description="Model to use (finetune-prod or pretrained)")
+    model: str = Query("finetune-prod", description="Model to use (finetune-prod or pretrained or de-pretrained)")
 ):
     """
     Convert text to speech and stream the audio as a WAV file.
@@ -156,6 +162,7 @@ async def health_check():
         "models": {
             "finetune-prod": loaded_models.get("finetune-prod", "not loaded"),
             "pretrained": loaded_models.get("pretrained", "not loaded")
+            "de-pretrained": loaded_models.get("de-pretrained", "not loaded")
         }
     }
 
@@ -175,6 +182,12 @@ async def list_models():
                 "name": "Pretrained",
                 "description": "Base model trained on 100k+ hours of English speech data",
                 "status": "loaded" if "pretrained" in models else "not loaded"
+            },
+            {
+                "id": "de-pretrained",
+                "name": "DE Pretrained",
+                "description": "Base model trained on German speech data",
+                "status": "loaded" if "de-pretrained" in models else "not loaded"
             }
         ]
     }
