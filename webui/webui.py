@@ -194,7 +194,7 @@ def create_interface():
                 ["Hello, my name is Tara. How are you doing today?", "tara", "finetune-prod"],
                 ["I'm excited to demonstrate the capabilities of Orpheus TTS!", "leah", "finetune-prod"],
                 ["This is an example of the Orpheus text-to-speech system.", "leo", "pretrained"],
-                ["Der Himmel ist blau und das ist doch schonmal ein Anfang, was?<chuckle>", "leo", "de-pretrained"]
+                ["Der Himmel ist blau und das ist doch schonmal ein Anfang, was?<chuckle>", "jana", "de-pretrained"]
             ],
             inputs=[text_input, voice_dropdown, model_dropdown]
         )
