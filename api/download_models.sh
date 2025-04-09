@@ -20,6 +20,7 @@ huggingface-cli login --token $HUGGINGFACE_TOKEN
 MODELS=(
     "canopylabs/orpheus-tts-0.1-finetune-prod"
     "canopylabs/orpheus-3b-0.1-pretrained"
+    "canopylabs/3b-de-pretrain-research_release"
 )
 
 # Base directory for models
